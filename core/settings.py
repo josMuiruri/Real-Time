@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 import os
 from pathlib import Path
+from environs import env
+
+env = ENV()
+env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +24,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-77btm4^pu2*+5p)o8sf0l_290sojsejrsl5g6dz_fq(tkm^5xu'
+SECRET_KEY = env.str('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = env.list(
+    'ALLOWED_HOST',
+    default=['local', '127.0.0.1']
+)
 
 
 # Application definition
@@ -141,6 +148,11 @@ MAILERS = {
 GRAPHENE = {
     'SCHEMA': 'core.schema.schema'
 }
+
+REDIS_URL = os.getenv(
+    "REDIS_URL",
+    "redis://127.0.0.1:6379/0"
+)
 
 CHANNEL_LAYERS = {
     'default': {
